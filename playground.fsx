@@ -21,3 +21,13 @@ let program =
     [| 0 .. 4 .. Array.length f - 1 |]
     |> Array.map (fun i -> BitConverter.ToInt32(f, i))
     |> Array.toList
+
+
+let trans n bits =
+    let maxv = (1 <<< (n - 1)) - 1
+
+    match bits with
+    | x when x > maxv ->
+        let m = 1 <<< n
+        (x - m)
+    | x -> x
