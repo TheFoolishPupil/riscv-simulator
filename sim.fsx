@@ -11,9 +11,11 @@ let program =
 
 let reg: int array = Array.zeroCreate 32
 
-let rec mainLoop program pc =
+let mutable pc = 0
+
+let rec mainLoop program =
     match pc with
-    | _ when int (pc >>> 2) = List.length program -> printf "Program executed"
+    | _ when (pc >>> 2) = List.length program -> printf "Program executed"
     | _ ->
 
         let index = (pc >>> 2)
@@ -49,9 +51,13 @@ let rec mainLoop program pc =
             ||| b101
 
         match opcode with
-        | 0x37 -> printf "LUI\n"
+        | 0x37 ->
+            printf "LUI\n"
+            reg.[rd] <- immU
 
-        | 0x17 -> printf "AUIPC\n"
+        | 0x17 ->
+            printf "AUIPC\n"
+            pc <- (pc + immU - 4)
 
         | 0x6f -> printf "JAL\n"
 
@@ -71,12 +77,25 @@ let rec mainLoop program pc =
 
         | 0x73 -> printf "ecall\n"
 
-        | _ -> failwith ("Unsupported instruction: " + (string opcode))
+        | _ -> printf "Unsupported instruction: %u\n" opcode
+        // failwith ("Unsupported instruction: " + (string opcode))
 
+
+        printf "%u \n" pc
         // Print contents of registers
         reg |> Array.iter (printf "%u ")
         printf "\n\n"
 
-        mainLoop program (pc + 4)
 
-mainLoop program 0
+        pc <- (pc + 4)
+        mainLoop program
+
+mainLoop program
+
+
+let result: byte array =
+    Array.zeroCreate ((Array.length reg) * 4)
+
+Buffer.BlockCopy(reg, 0, result, 0, Array.length result)
+
+File.WriteAllBytes("tests/result.bin", result)
