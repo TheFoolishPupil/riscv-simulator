@@ -1,7 +1,5 @@
-open System
-open System.IO
+module CPU
 
-// This takes signed extended integers and converts them two a negative int.
 let twosC n bits =
     let maxv = (1 <<< (n - 1)) - 1
 
@@ -11,16 +9,6 @@ let twosC n bits =
         x - m
     | x -> x
 
-let f = File.ReadAllBytes("tests/addlarge.bin")
-
-let program' =
-    [| 0 .. 4 .. Array.length f - 1 |]
-    |> Array.map (fun i -> BitConverter.ToUInt32(f, i))
-    |> Array.toList
-
-let reg': int array = Array.zeroCreate 32
-
-let pc' = ref 0
 
 let rec mainLoop program (pc: int ref) (reg: int array) =
     match pc with
@@ -105,10 +93,6 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
 
             | _ -> printf "To be implemented"
 
-
-
-
-
         | 0x33u -> printf "R-type\n"
 
         | 0x73u -> printf "ecall\n"
@@ -119,16 +103,5 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
         reg |> Array.iter (printf "%i ")
         printf "\n\n"
 
-
         pc := pc.Value + 4
         mainLoop program pc reg
-
-mainLoop program' pc' reg'
-
-
-let result: byte array =
-    Array.zeroCreate ((Array.length reg') * 4)
-
-Buffer.BlockCopy(reg', 0, result, 0, Array.length result)
-
-File.WriteAllBytes("tests/result.bin", result)
