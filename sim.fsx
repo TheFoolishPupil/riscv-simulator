@@ -1,13 +1,14 @@
 open System
 open System.IO
 
+// This takes signed integers that are smaller than 32 bit and converts them two a negative int.
 let twosC n bits =
     let maxv = (1 <<< (n - 1)) - 1
 
     match bits with
     | x when x > maxv ->
         let m = 1 <<< n
-        (x - m)
+        x - m
     | x -> x
 
 let f = File.ReadAllBytes("tests/addlarge.bin")
@@ -33,9 +34,9 @@ let rec mainLoop program =
         let opcode = instr &&& 0x7fu
         let funct3 = instr >>> 12 &&& 0x7u
         let funct7 = instr >>> 25
-        let rd = instr >>> 7 &&& 0x1fu
-        let rs1 = instr >>> 15 &&& 0x1fu
-        let rs2 = instr >>> 20 &&& 0x1fu
+        let rd = int (instr >>> 7 &&& 0x1fu)
+        let rs1 = int (instr >>> 15 &&& 0x1fu)
+        let rs2 = int (instr >>> 20 &&& 0x1fu)
         let immI = instr >>> 20 &&& 0xFFFu
         let immU = instr >>> 12
 
@@ -79,9 +80,32 @@ let rec mainLoop program =
 
         | 0x23u -> printf "S-type\n"
 
-        | 0x13u ->
-            printf "I-type Arithmetic %i\n" (twosC 12 (int immI))
-            reg.[int rd] <- (reg.[int rs1] + twosC 12 (int immI))
+        | 0x13u -> // I-type
+            match funct3 with
+
+            | 0b000u -> // Addi
+                reg.[rd] <- (reg.[rs1] + twosC 12 (int immI))
+
+            | 0b010u -> // SLTI
+                reg.[rd] <-
+                    if reg.[rs1] < twosC 12 (int immI) then
+                        1
+                    else
+                        0
+
+            | 0b011u -> // SLTIU
+                reg.[rd] <-
+                    if reg.[rd] < twosC 12 (int immI) then
+                        1
+                    else
+                        0
+
+            | 0b100u -> // XORI
+                reg.[rd] <- reg.[rs1] ^^^ int immI
+
+
+
+
 
         | 0x33u -> printf "R-type\n"
 
