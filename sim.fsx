@@ -105,10 +105,6 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
 
             | _ -> printf "To be implemented"
 
-
-
-
-
         | 0x33u -> printf "R-type\n"
 
         | 0x73u -> printf "ecall\n"

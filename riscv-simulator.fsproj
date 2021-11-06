@@ -8,8 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Cpu.fs" /> 
-    <Compile Include="Program.fs" /> 
+    <Compile Include="IO.fs" />
+    <Compile Include="Cpu.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
 
 </Project>
