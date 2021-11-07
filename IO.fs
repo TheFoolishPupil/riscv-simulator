@@ -12,10 +12,11 @@ let loadProgram path =
 
 let saveResult (path: string) reg =
 
-    let savePath = path.[0..(String.length path) - 5]
+    let savePath =
+        path.[0..(String.length path) - 5] + "_.res"
 
     let result: byte array =
         Array.zeroCreate ((Array.length reg) * 4)
 
     Buffer.BlockCopy(reg, 0, result, 0, Array.length result)
-    File.WriteAllBytes(savePath + "_.res", result)
+    File.WriteAllBytes(savePath, result)
