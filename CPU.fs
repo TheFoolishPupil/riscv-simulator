@@ -19,28 +19,30 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
         let rs1 = decodeRs1 instr
         let rs2 = decodeRs2 instr
 
-        let shamt = decodeShamt instr
         let immI = decodeImmI instr
-        let immU = decodeImmU instr
-        let immS = decodeImmS instr
-        let immB = decodeImmB instr
-        let immJ = decodeImmJ instr
+
 
         match opcode with
         | 0x37u ->
+            let immU = decodeImmU instr
             printf "LUI x%i %i" rd immU
             reg.[int rd] <- immU
 
         | 0x17u ->
+            let immU = decodeImmU instr
             printf "AUIPC x%i %i" rd immU
             pc := (pc.Value + int immU - 4) // TODO: This casting might cause problems
 
-        | 0x6fu -> printf "JAL x%i %i" rd immJ
+        | 0x6fu ->
+            let immJ = decodeImmJ instr
+            printf "JAL x%i %i" rd immJ
 
         | 0x67u -> printf "JALR x%i x%i %i" rd rs1 immI
 
 
         | 0x63u -> // B-type
+            let immB = decodeImmB instr
+
             match funct3 with
             | 0b000u -> printf "BEQ x%i x%i %i" rs1 rs2 immB
 
@@ -73,6 +75,8 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
 
 
         | 0x23u -> // S-type
+            let immS = decodeImmS instr
+
             match funct3 with
             | 0b000u -> printf "SB x%i x%i %i" rs1 rs2 immS
 
@@ -84,6 +88,8 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
 
 
         | 0x13u -> // I-type
+            let shamt = decodeShamt instr
+
             match funct3 with
             | 0b000u ->
                 printf "ADDI x%i x%i %i" rd rs1 immI
