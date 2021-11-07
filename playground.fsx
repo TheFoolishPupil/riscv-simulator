@@ -3,7 +3,6 @@ open System.IO
 
 // A place to try out code with FSharp Interactive
 
-
 // Binary representation of int
 Convert.ToString(7, 2)
 

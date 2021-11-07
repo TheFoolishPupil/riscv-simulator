@@ -37,7 +37,7 @@ let decodeRs2 =
 
 let decodeShamt =
     function
-    | i -> i >>> 20 &&& 0x1fu
+    | i -> int (i >>> 20 &&& 0x1fu)
 
 let decodeImmI =
     function
