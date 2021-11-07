@@ -2,14 +2,6 @@ module CPU
 
 open Decoder
 
-let twosC n bits =
-    let maxv = (1 <<< (n - 1)) - 1
-
-    match bits with
-    | x when x > maxv ->
-        let m = 1 <<< n
-        x - m
-    | x -> x
 
 let rec mainLoop program (pc: int ref) (reg: int array) =
     match pc with
@@ -21,39 +13,19 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
         let index = (pc.Value >>> 2)
         let instr = program.[index]
         let opcode = decodeOpcode instr
-        let funct3 = instr >>> 12 &&& 0x7u
-        let funct7 = instr >>> 25
-        let rd = int (instr >>> 7 &&& 0x1fu)
-        let rs1 = int (instr >>> 15 &&& 0x1fu)
-        let rs2 = int (instr >>> 20 &&& 0x1fu)
-        let shamt = instr >>> 20 &&& 0x1fu
-        let immI = twosC 12 (int (instr >>> 20 &&& 0xFFFu))
-        let immU = int (instr >>> 12) <<< 12
+        let funct3 = decodeFunct3 instr
+        let funct7 = decodeFunct7 instr
 
-        let immS =
-            let i1 = instr >>> 7 &&& 0x1fu
-            let i2 = instr >>> 25
-            twosC 12 (int (i2 <<< 5 ||| i1))
+        let rd = decodeRd instr
+        let rs1 = decodeRs1 instr
+        let rs2 = decodeRs2 instr
 
-        let immB =
-            let b11 = instr >>> 7 &&& 0x1u
-            let b41 = instr >>> 8 &&& 0xfu
-            let b105 = instr >>> 25 &&& 0x3fu
-            let b12 = instr >>> 31 &&& 0x1u
-            twosC 12 (int (((b12 <<< 1 ||| b11) <<< 6 ||| b105) <<< 4 ||| b41))
-
-        let immJ =
-            let b1912 = instr >>> 12 &&& 0xffu
-            let b11 = instr >>> 20 &&& 0x1u
-            let b101 = instr >>> 21 &&& 0x3ffu
-            let b20 = instr >>> 31
-
-            twosC
-                20
-                (int (
-                    ((b20 <<< 8 ||| b1912) <<< 1 ||| b11) <<< 10
-                    ||| b101
-                ))
+        let shamt = decodeShamt instr
+        let immI = decodeImmI instr
+        let immU = decodeImmU instr
+        let immS = decodeImmS instr
+        let immB = decodeImmB instr
+        let immJ = decodeImmJ instr
 
         match opcode with
         | 0x37u ->
@@ -114,18 +86,15 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
                 printf "ADDI x%i x%i %i" rd rs1 immI
                 reg.[rd] <- (reg.[rs1] + int immI)
 
-            | 0b010u ->
-                printf "SLTI x%i x%i %i" rd rs1 immI
-                reg.[rd] <- if reg.[rs1] < immI then 1 else 0
+            | 0b010u -> printf "SLTI x%i x%i %i" rd rs1 immI
+            // reg.[rd] <- if reg.[rs1] < immI then 1 else 0
 
-            | 0b011u ->
-                printf "SLTIU x%i x%i %i" rd rs1 immI
-
-                reg.[rd] <-
-                    if reg.[rd] < twosC 12 (int immI) then
-                        1
-                    else
-                        0
+            | 0b011u -> printf "SLTIU x%i x%i %i" rd rs1 immI
+            // reg.[rd] <-
+            //     if reg.[rd] < twosC 12 (int immI) then
+            //         0
+            //     else
+            //         1
 
             | 0b100u ->
                 printf "XORI x%i x%i %i" rd rs1 immI
