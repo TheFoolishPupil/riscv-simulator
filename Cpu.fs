@@ -9,7 +9,6 @@ let twosC n bits =
         x - m
     | x -> x
 
-
 let rec mainLoop program (pc: int ref) (reg: int array) =
     match pc with
     | _ when (pc.Value >>> 2) = List.length program -> printf "Program executed"
@@ -93,7 +92,14 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
 
             | _ -> printf "To be implemented"
 
-        | 0x33u -> printf "R-type\n"
+        | 0x33u -> // R-type
+            match funct3 with
+
+            | 0b000u -> // ADD
+                reg.[rd] <- reg.[rs1] + reg.[rs2]
+
+            | _ -> printf "To be implemented"
+
 
         | 0x73u -> printf "ecall\n"
 

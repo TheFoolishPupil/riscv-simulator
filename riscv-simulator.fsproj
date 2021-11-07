@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <Compile Include="IO.fs" />
-    <Compile Include="Cpu.fs" />
+    <Compile Include="CPU.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

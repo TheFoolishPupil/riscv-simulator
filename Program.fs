@@ -5,11 +5,10 @@ open IO
 [<EntryPoint>]
 let main args =
 
-    if Array.length args <= 1 then
+    if Array.isEmpty args then
         failwith "No program provided."
 
-    let programPath = args.[1]
-    let resultsPath = args.[2]
+    let programPath = args.[0]
 
     let program = loadProgram (programPath)
     let pc = ref 0
@@ -17,6 +16,7 @@ let main args =
 
     mainLoop program pc reg
 
-    saveProgram resultsPath reg
+    saveResult programPath reg
+
 
     0 // Return integer

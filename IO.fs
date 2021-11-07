@@ -10,9 +10,12 @@ let loadProgram path =
     |> Array.map (fun i -> BitConverter.ToUInt32(f, i))
     |> Array.toList
 
-let saveProgram path reg =
+let saveResult (path: string) reg =
+
+    let savePath = path.[0..(String.length path) - 5]
+
     let result: byte array =
         Array.zeroCreate ((Array.length reg) * 4)
 
     Buffer.BlockCopy(reg, 0, result, 0, Array.length result)
-    File.WriteAllBytes(path, result)
+    File.WriteAllBytes(savePath + "_.res", result)
