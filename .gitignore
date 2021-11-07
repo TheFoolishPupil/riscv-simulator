@@ -8,3 +8,4 @@ Program.exe
 /tests/*/*_.res
 
 .vscode/
+*/.DS_Store

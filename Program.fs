@@ -18,5 +18,4 @@ let main args =
 
     saveResult programPath reg
 
-
-    0 // Return integer
+    0

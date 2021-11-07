@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Decoder.fs" />
     <Compile Include="IO.fs" />
     <Compile Include="CPU.fs" />
     <Compile Include="Program.fs" />

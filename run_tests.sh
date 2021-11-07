@@ -25,7 +25,7 @@ do
         if [[ -n "$ERROR" ]] ; then
             complete=0
             # Print error
-            printf "\n%-12s\t ${red}⚠️ Program crashed with following exception:${reset}\n" ${f%????}
+            printf "\n%-12s\t ${red}Program crashed ⚠️ ${reset}\n" ${f%????}
             printf "____________________________________________\n"
             printf "$ERROR"
             printf "\n____________________________________________\n\n"
@@ -36,9 +36,9 @@ do
             DIFF=$(diff ${f%????}".res" ${f%????}"_.res")
             if [ "$DIFF" ]; then
                 complete=0
-                printf "%-12s\t ${red}Test Failed \xE2\x9D\x8C${reset}\n" ${f%????}
+                printf "%-12s\t ${red}Failed \xE2\x9D\x8C${reset}\n" ${f%????}
             else
-                printf "%-12s\t ${green}Test Passed \xE2\x9C\x94${reset}\n" ${f%????}
+                printf "%-12s\t ${green}Passed \xE2\x9C\x94${reset}\n" ${f%????}
             fi
         fi
     done
