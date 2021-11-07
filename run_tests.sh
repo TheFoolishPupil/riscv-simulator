@@ -46,7 +46,7 @@ do
     cd ..
 done
 if [[ $complete == 1 ]] ; then
-    echo "All tests passed! 🥳"
+    echo "All tests passed! 🍾 🥂"
 else
     echo "Not all tests passed... 😈"
 fi
