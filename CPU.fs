@@ -44,13 +44,29 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
             let immB = decodeImmB instr
 
             match funct3 with
-            | 0b000u -> printf "BEQ x%i x%i %i" rs1 rs2 immB
+            | 0b000u ->
+                printf "BEQ x%i x%i %i" rs1 rs2 immB
 
-            | 0b001u -> printf "BNE x%i x%i %i" rs1 rs2 immB
+                if reg.[rs1] = reg.[rs2] then
+                    pc := pc.Value + immB - 4
 
-            | 0b100u -> printf "BLT x%i x%i %i" rs1 rs2 immB
+            | 0b001u ->
+                printf "BNE x%i x%i %i" rs1 rs2 immB
 
-            | 0b101u -> printf "BGE x%i x%i %i" rs1 rs2 immB
+                if reg.[rs1] <> reg.[rs2] then
+                    pc := pc.Value + immB - 4
+
+            | 0b100u ->
+                printf "BLT x%i x%i %i" rs1 rs2 immB
+
+                if reg.[rs1] < reg.[rs2] then
+                    pc := pc.Value + immB - 4
+
+            | 0b101u ->
+                printf "BGE x%i x%i %i" rs1 rs2 immB
+
+                if reg.[rs1] > reg.[rs2] then
+                    pc := pc.Value + immB - 4
 
             | 0b110u -> printf "BLTU x%i x%i %i" rs1 rs2 immB
 
@@ -187,7 +203,7 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
 
         | 0x73u -> printf "ecall"
 
-        | _ -> printf "??: %u" opcode
+        | _ -> printf "?? %u" opcode
 
         // Print contents of registers
         printf "\nReg: "

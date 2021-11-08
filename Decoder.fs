@@ -61,7 +61,9 @@ let decodeImmB =
         let b41 = i >>> 8 &&& 0xfu
         let b105 = i >>> 25 &&& 0x3fu
         let b12 = i >>> 31 &&& 0x1u
+
         twosC 12 (int (((b12 <<< 1 ||| b11) <<< 6 ||| b105) <<< 4 ||| b41))
+        <<< 1 // TODO: Why do we need to multiply by two here???
 
 let decodeImmJ =
     function
