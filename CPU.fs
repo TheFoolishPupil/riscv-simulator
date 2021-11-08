@@ -1,5 +1,7 @@
 module CPU
 
+open System.Threading
+
 open Decoder
 
 let rec mainLoop program (pc: int ref) (reg: int array) =
@@ -10,7 +12,17 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
         printf "PC: %u \t\t" pc.Value
 
         let index = (pc.Value >>> 2)
-        let instr = program.[index]
+        // let instr = program.[index]
+
+        let instr =
+            try
+                program.[index]
+            with
+            | d ->
+                printfn "Program index out of bounds. Halting..."
+                pc := ((List.length program) <<< 2) - 4
+                0x13u // ADDI x0 x0 0
+
         let opcode = decodeOpcode instr
         let funct3 = decodeFunct3 instr
         let funct7 = decodeFunct7 instr
@@ -68,9 +80,17 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
                 if reg.[rs1] > reg.[rs2] then
                     pc := pc.Value + immB - 4
 
-            | 0b110u -> printf "BLTU x%i x%i %i" rs1 rs2 immB
+            | 0b110u ->
+                printf "BLTU x%i x%i %i" rs1 rs2 immB
 
-            | 0b111u -> printf "BGEU x%i x%i %i" rs1 rs2 immB
+                if uint32 reg.[rs1] < uint32 reg.[rs2] then
+                    pc := pc.Value + immB - 4
+
+            | 0b111u ->
+                printf "BGEU x%i x%i %i" rs1 rs2 immB
+
+                if uint32 reg.[rs1] > uint32 reg.[rs2] then
+                    pc := pc.Value + immB - 4
 
             | _ -> printf "B-type"
 
