@@ -12,7 +12,6 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
         printf "PC: %u \t\t" pc.Value
 
         let index = (pc.Value >>> 2)
-        // let instr = program.[index]
 
         let instr =
             try
@@ -33,7 +32,6 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
 
         let immI = decodeImmI instr
 
-
         match opcode with
         | 0x37u ->
             let immU = decodeImmU instr
@@ -43,7 +41,7 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
         | 0x17u ->
             let immU = decodeImmU instr
             printf "AUIPC x%i %i" rd immU
-            pc := (pc.Value + int immU - 4) // TODO: This casting might cause problems
+            pc := (pc.Value + int immU - 4)
 
         | 0x6fu ->
             let immJ = decodeImmJ instr
@@ -137,7 +135,12 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
 
             | 0b011u ->
                 printf "SLTIU x%i x%i %i" rd rs1 immI
-                reg.[rd] <- if reg.[rd] < immI then 0 else 1
+
+                reg.[rd] <-
+                    if uint32 reg.[rd] < uint32 immI then
+                        0
+                    else
+                        1
 
             | 0b100u ->
                 printf "XORI x%i x%i %i" rd rs1 immI
@@ -186,14 +189,18 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
                 printf "SLL x%i x%i x%i" rd rs1 rs2
                 reg.[rd] <- reg.[rs1] <<< reg.[rs2]
 
-            // TODO: how to handle SLT vs SLTU
             | 0b010u ->
                 printf "SLT x%i x%i x%i" rd rs1 rs2
                 reg.[rd] <- if reg.[rs1] < reg.[rs2] then 1 else 0
 
             | 0b011u ->
                 printf "SLTU x%i x%i x%i" rd rs1 rs2
-                reg.[rd] <- if reg.[rs1] < reg.[rs2] then 1 else 0
+
+                reg.[rd] <-
+                    if uint32 reg.[rs1] < uint32 reg.[rs2] then
+                        1
+                    else
+                        0
 
             | 0b100u ->
                 printf "XOR x%i x%i x%i" rd rs1 rs2
@@ -229,6 +236,8 @@ let rec mainLoop program (pc: int ref) (reg: int array) =
         printf "\nReg: "
         reg |> Array.iter (printf "%i ")
         printf "\n\n"
+
+        Thread.Sleep(20)
 
         pc := pc.Value + 4
         mainLoop program pc reg
